@@ -1,4 +1,5 @@
 import argparse, logging, random
+from pathlib import Path
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -21,7 +22,8 @@ def get_args():
 
 def main():
     args = get_args()
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, cache_path='~/.cache/spotishuffle_cache'))
+    cache_path = str(Path.home().joinpath('.cache/spotishuffle_cache'))
+    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, cache_path=cache_path))
     user_id = sp.current_user()['id']
 
     if args.liked or args.input is None:
