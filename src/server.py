@@ -9,4 +9,4 @@ def create_app():
 
 def configure_blueprints(app):
     app.register_blueprint(test, url_prefix='/test')
-    app.register_blueprint(api, url_prefix='/api/v1')
+    # app.register_blueprint(api, url_prefix='/api/v1')
