@@ -1,8 +1,12 @@
-from flask import Flask, render_template
-import spotishuffle
+from flask import Flask
+from src.test_handlers import mod as test
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    configure_blueprints(app)
+    return app
 
-@app.route('/')
-def index():
-	return render_template('index.html')
+
+def configure_blueprints(app):
+    app.register_blueprint(test, url_prefix='/test')
+    app.register_blueprint(api, url_prefix='/api/v1')

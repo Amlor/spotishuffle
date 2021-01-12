@@ -1,5 +1,6 @@
 import argparse, logging, random
 from pathlib import Path
+from appdirs import user_cache_dir
 from typing import List, Optional
 
 import spotipy
@@ -10,14 +11,13 @@ logging.basicConfig(level="WARN")
 
 SCOPE = "user-library-read playlist-read-private playlist-modify-private"
 LIMIT = 50
-DEFAULT_CACHE_PATH = ".cache/spotishuffle_cache"
 
 
 def shuffle(
-    out_playlist_name: str, in_playlist_name: Optional[str], liked: bool = False
+    out_playlist_name: str, in_playlist_name: Optional[str], custom_cache_path: Optional[str], liked: bool = False
 ) -> None:
     sp = spotipy.Spotify(
-        auth_manager=SpotifyOAuth(scope=SCOPE, cache_path=get_cache_path())
+        auth_manager=SpotifyOAuth(scope=SCOPE, cache_path=get_cache_path(custom_cache_path))
     )
     user_id = sp.current_user()["id"]
 
@@ -37,10 +37,15 @@ def shuffle(
 
 
 def get_cache_path(custom_path: Optional[str] = None) -> str:
-    path = DEFAULT_CACHE_PATH
+    cache_dir = Path(user_cache_dir()).joinpath('spotishuffle')
+    filepath = cache_dir.joinpath('cache.json')
     if custom_path is not None:
-        path = custom_path
-    return str(Path.home().joinpath(path))
+        filepath = Path(custom_path)
+    else:
+        if not cache_dir.is_dir():
+            cache_dir.mkdir()
+    print(str(filepath))
+    return str(filepath)
 
 
 def get_liked(sp) -> List[str]:
@@ -97,6 +102,9 @@ def get_args():
     parser.add_argument(
         "-o", "--output", required=True, help="Target playlist name (required)"
     )
+    parser.add_argument(
+        "-c", "--cache", required=False, help="Custom json cache file path, defaults to <user_cache_dir>/spotishuffle/cache.json"
+    )
 
     playlist_conflict_group = parser.add_mutually_exclusive_group()
     playlist_conflict_group.add_argument(
@@ -114,7 +122,7 @@ def get_args():
 
 def as_script():
     args = get_args()
-    shuffle(args.output, args.input, args.liked)
+    shuffle(args.output, args.input, args.cache, args.liked)
 
 
 if __name__ == "__main__":
