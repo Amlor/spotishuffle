@@ -14,10 +14,15 @@ LIMIT = 50
 
 
 def shuffle(
-    out_playlist_name: str, in_playlist_name: Optional[str], custom_cache_path: Optional[str], liked: bool = False
+    out_playlist_name: str,
+    in_playlist_name: Optional[str],
+    custom_cache_path: Optional[str],
+    liked: bool = False,
 ) -> None:
     sp = spotipy.Spotify(
-        auth_manager=SpotifyOAuth(scope=SCOPE, cache_path=get_cache_path(custom_cache_path))
+        auth_manager=SpotifyOAuth(
+            scope=SCOPE, cache_path=get_cache_path(custom_cache_path)
+        )
     )
     user_id = sp.current_user()["id"]
 
@@ -37,8 +42,8 @@ def shuffle(
 
 
 def get_cache_path(custom_path: Optional[str] = None) -> str:
-    cache_dir = Path(user_cache_dir()).joinpath('spotishuffle')
-    filepath = cache_dir.joinpath('cache.json')
+    cache_dir = Path(user_cache_dir()).joinpath("spotishuffle")
+    filepath = cache_dir.joinpath("cache.json")
     if custom_path is not None:
         filepath = Path(custom_path)
     else:
@@ -103,7 +108,10 @@ def get_args():
         "-o", "--output", required=True, help="Target playlist name (required)"
     )
     parser.add_argument(
-        "-c", "--cache", required=False, help="Custom json cache file path, defaults to <user_cache_dir>/spotishuffle/cache.json"
+        "-c",
+        "--cache",
+        required=False,
+        help="Custom json cache file path, defaults to <user_cache_dir>/spotishuffle/cache.json",
     )
 
     playlist_conflict_group = parser.add_mutually_exclusive_group()
