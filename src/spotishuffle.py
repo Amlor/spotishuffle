@@ -1,10 +1,14 @@
-import argparse, logging, random
+import argparse
+import logging
+import random
 from pathlib import Path
 from appdirs import user_cache_dir
 from typing import List, Optional
 
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+
+import config
 
 logger = logging.getLogger("spotishuffle")
 logging.basicConfig(level="WARN")
@@ -21,7 +25,11 @@ def shuffle(
 ) -> None:
     sp = spotipy.Spotify(
         auth_manager=SpotifyOAuth(
-            scope=SCOPE, cache_path=get_cache_path(custom_cache_path)
+            client_id=config.SPOTIPY_CLIENT_ID,
+            client_secret=config.SPOTIFYL_CLIENT_SECRET,
+            redirect_uri=config.SPOTIPY_REDIRECT_URI,
+            scope=SCOPE,
+            cache_path=get_cache_path(custom_cache_path)
         )
     )
     user_id = sp.current_user()["id"]
